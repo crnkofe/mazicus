@@ -4,7 +4,9 @@ This project features a number of algorithms to generate mazes (according to Maz
 
 ## Usage
 
-$ java -jar mazicus-0.1.0-standalone.jar [args]
+Install Leiningen
+
+$ lein run
 
 ## Options
 
