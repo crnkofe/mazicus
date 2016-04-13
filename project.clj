@@ -1,8 +1,7 @@
 (defproject mazicus "0.1.0-SNAPSHOT"
-  :description "FIXME: write description"
-  :url "http://example.com/FIXME"
-  :license {:name "Eclipse Public License"
-            :url "http://www.eclipse.org/legal/epl-v10.html"}
+  :description "This project features a number of algorithms to generate mazes (according to Mazes for Programmers book)"
+  :url "https://github.com/crnkofe/mazicus"
+  :license {}
   :dependencies [[org.clojure/clojure "1.8.0"]]
   :main ^:skip-aot mazicus.core
   :target-path "target/%s"
