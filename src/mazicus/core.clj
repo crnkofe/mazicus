@@ -1,30 +1,32 @@
 (ns mazicus.core
   (:gen-class))
 
+(use 'clojure.pprint)
+
 (deftype Cell [x,y])
 
 
-(defn innerRow [size] (reduce conj (map #(hash-map % :noConnection) (range size))))
+(defn innerRow [size] (into (sorted-map) (reduce conj (map #(hash-map % :notc) (range size)))))
 
 (defn connection [size]
-  (reduce conj (map #(hash-map % (innerRow size)) (range size)))
+  (into (sorted-map) (reduce conj (map #(hash-map % (innerRow size)) (range size))))
 )
 
-(defn updateConnectionRow [row x value]
-  (conj row {x value})
+(defn updateConnection1 [connection x y value]
+  (into {} (filter (fn [[k v]] (not= k y)) connection))
 )
 
-(defn updateConnection [connection x y value]
-  (conj 
-    (reduce hash-map (reduce conj (filter (fn [[k v]] (not= k y)) connection)))
-    (reduce hash-map (
-                      updateConnectionRow (reduce conj (filter (fn [[k v]] (= k y)) connection)) x value
-                     )
+(defn updateConnection2 [connection x y value]
+  (
+   into (sorted-map) (merge
+      (into {} (filter (fn [[k v]] (not= k y)) connection))
+      {y (assoc (get connection y) x value)}
     )
   )
 )
 
+
 (defn -main
   [& args]
-  (print (connection 5))
+  (pprint (connection 5))
   )
