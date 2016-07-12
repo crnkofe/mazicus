@@ -3,20 +3,45 @@
 
 (use 'clojure.pprint)
 
-(deftype Cell [x,y])
+(declare generate_neighbours)
+
+(defrecord Cell [x,y,neighbours])
 
 
-(defn innerRow [size] (into (sorted-map) (reduce conj (map #(hash-map % :notc) (range size)))))
+(defn generate_row [idx, size] 
+  (
+   into 
+   (sorted-map) 
+   (
+    reduce conj (map #(hash-map % (->Cell % idx (generate_neighbours % idx size))) (range size))
+   )
+  )
+)
+
+(defn is_valid_cell [x, y, size]
+  (
+    cond 
+      (< x 0) false
+      (>= x size) false
+      (< y 0) false
+      (>= y size) false
+      :else true
+  )
+)
+
+(defn generate_neighbours [x, y, size] 
+  (filter 
+   #(is_valid_cell (get % 0) (get % 1) size) 
+   [
+    [(dec x) y] [(inc x) y] [x (dec y)] [x (inc y)]
+   ])
+)
 
 (defn connection [size]
-  (into (sorted-map) (reduce conj (map #(hash-map % (innerRow size)) (range size))))
+  (into (sorted-map) (reduce conj (map #(hash-map % (generate_row % size)) (range size))))
 )
 
-(defn updateConnection1 [connection x y value]
-  (into {} (filter (fn [[k v]] (not= k y)) connection))
-)
-
-(defn updateConnection2 [connection x y value]
+(defn updateConnection [connection x y value]
   (
    into (sorted-map) (merge
       (into {} (filter (fn [[k v]] (not= k y)) connection))
