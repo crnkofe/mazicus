@@ -1,0 +1,60 @@
+(ns common)
+
+(declare generate_neighbours)
+
+(defrecord Cell [x,y,neighbours])
+
+(defn point [x, y, graph] 
+  (get (get graph y) x)
+)
+
+(defn generate_row [idx, size] 
+  (
+   into 
+   (sorted-map) 
+   (
+    reduce conj (map #(hash-map % (->Cell % idx (generate_neighbours % idx size))) (range size))
+   )
+  )
+)
+
+(defn is_valid_cell [x, y, size]
+  (
+    cond 
+      (< x 0) false
+      (>= x size) false
+      (< y 0) false
+      (>= y size) false
+      :else true
+  )
+)
+
+(defn generate_neighbours [x, y, size]
+  (filter 
+   #(is_valid_cell (get % 0) (get % 1) size) 
+   [
+    [(dec x) y] [(inc x) y] [x (dec y)] [x (inc y)]
+   ])
+)
+
+(defn connection [size]
+  (into (sorted-map) (reduce conj (map #(hash-map % (generate_row % size)) (range size))))
+)
+
+(defn generate_grid_row [idx, size] 
+  (
+   into 
+   (sorted-map) 
+   (
+    reduce conj (map #(hash-map % (->Cell % idx [])) (range size))
+   )
+  )
+)
+
+(defn filter_visited [visited, neighbours] 
+  (filter #(not (contains? visited %)) neighbours)
+)
+
+(defn grid[size]
+  (into (sorted-map) (reduce conj (map #(hash-map % (generate_grid_row % size)) (range size))))
+)
