@@ -12,43 +12,22 @@
 )
 
 (defn carve_wall [from_list, visited, graph, size]
-  (println "mega")
-  (println from_list)
   (if (not (empty? from_list))
     (let [shuffle_from (shuffle from_list)
           rnd_from (first shuffle_from)
           neighbours (generate_ne (:x rnd_from) (:y rnd_from) size)
           ]
       (if (not (empty? neighbours))
-        (comment "kle morm popravt ta del k zamenja vsebino celice")
         (let [ne_neighbour (rand-nth neighbours)
-              filtered_from (filter #((and (= (:x rnd_from) (:x %)) (= (:y rnd_from) (:y %)))) from_list)]
-          (carve_wall (rest shuffle_from) (conj visited rnd_from) graph size)
+              filtered_from (filter #((and (= (:x rnd_from) (:x %)) (= (:y rnd_from) (:y %)))) from_list)
+              existing_neighbours (get-in graph [(:y rnd_from) (:x rnd_from) :neighbours])
+              updated_graph (assoc-in graph [(:y rnd_from) (:x rnd_from) :neighbours] (into [] (conj existing_neighbours ne_neighbour)))]
+          (carve_wall (rest shuffle_from) (conj visited rnd_from) updated_graph size)
         )
         (carve_wall (rest shuffle_from) (conj visited rnd_from) graph size)
       )
     )
-    :default
-  )
-)
-
-
-(defn carve_wall1 [from_list, visited, graph, size]
-  (let [from (rand-nth from_list)
-        ne_neighbour (rand-nth (generate_ne (:x from) (:y from) size))]
-    (if (not (empty? from_list))
-      (let [filtered_from (filter #((and (= (:x from) (:x %)) (= (:y from) (:y %)))) from_list)]
-        (println "asdasd")
-        (println from)
-        (println (conj visited from))
-        (assoc (get (get graph (:y from)) (:x from)) :neighbours ne_neighbour)
-        (println "www")
-        (println filtered_from)
-        (println visited)
-        (carve_wall filtered_from visited graph size)
-      )
-      :default
-    )
+    graph
   )
 )
 
