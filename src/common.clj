@@ -24,9 +24,9 @@
   (
     cond 
       (< x 0) false
-      (>= x (dec size)) false
+      (>= x size) false
       (< y 0) false
-      (>= y (dec size)) false
+      (>= y size) false
       :else true
   )
 )
@@ -72,8 +72,9 @@
 )
 
 (defn print_row [row]
-  (let [grid_row (map #(grid_row_rep (get row %)) (keys row))
-        grid_top_row (map #(grid_top_rep (get row %)) (keys row))]
+  (println row)
+  (let [grid_row (map #(grid_row_rep (get row %)) (sort (keys row)))
+        grid_top_row (map #(grid_top_rep (get row %)) (sort (keys row)))]
      (if (not (blank? (join "" grid_top_row)))
        (join "\n" [(join "" grid_top_row) (join "" grid_row) ""])
        (str (join "" grid_row) "\n")
@@ -81,9 +82,8 @@
   )
 )
 
-(comment )
 (defn print_grid [grid] 
-  (join "" (map #(print_row (get grid %)) (reverse (keys grid))))
+  (join "" (map #(print_row (get grid %)) (reverse (sort (keys grid)))))
 )
 
 (defn grid[size]
