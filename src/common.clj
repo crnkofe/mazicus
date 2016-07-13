@@ -24,9 +24,9 @@
   (
     cond 
       (< x 0) false
-      (>= x size) false
+      (>= x (dec size)) false
       (< y 0) false
-      (>= y size) false
+      (>= y (dec size)) false
       :else true
   )
 )
