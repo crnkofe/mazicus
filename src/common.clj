@@ -72,7 +72,6 @@
 )
 
 (defn print_row [row]
-  (println row)
   (let [grid_row (map #(grid_row_rep (get row %)) (sort (keys row)))
         grid_top_row (map #(grid_top_rep (get row %)) (sort (keys row)))]
      (if (not (blank? (join "" grid_top_row)))
