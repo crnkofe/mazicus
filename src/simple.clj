@@ -11,8 +11,31 @@
    ])
 )
 
+(defn carve_binary_cell [idx cell, size]
+  {
+    idx 
+    (let [neighbours (generate_ne (:x cell) (:y cell) size)]
+      (if (empty? neighbours)
+        cell
+        (let [ne_neighbour (rand-nth neighbours)]
+          (assoc-in cell [:neighbours] [ne_neighbour])
+        )
+      )
+    )
+  }
+)
+
+(defn carve_binary_row [idx row, size]
+  [idx (reduce merge (map #(carve_binary_cell % (get row %) size) (keys row)))]
+)
+
+(defn carve_binary_wall_optimized [graph, size]
+  (into {} (map #(carve_binary_row % (get graph %) size) (keys graph)))
+)
+
+(comment "this code doesn't scale well and produces a stack overflow")
 (defn carve_binary_wall [from_list, visited, graph, size]
-  (if (not (empty? from_list))
+  (if (empty? from_list)
     (let [shuffle_from (shuffle from_list)
           rnd_from (first shuffle_from)
           neighbours (generate_ne (:x rnd_from) (:y rnd_from) size)
@@ -47,6 +70,16 @@
   )
 )
 
+(defn carve_binary_maze_optimized [size]
+  (let [maze (grid size)]
+    (carve_binary_wall_optimized maze size)
+  )
+)
+
 (defn str_binary_maze [size]
   (print_grid (carve_binary_maze size))
+)
+
+(defn str_binary_maze_optimized [size]
+  (print_grid (carve_binary_maze_optimized size))
 )
