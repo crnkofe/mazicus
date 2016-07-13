@@ -1,4 +1,6 @@
 (ns common)
+(use 'clojure.pprint)
+(use '[clojure.string :only (join split blank?)])
 
 (declare generate_neighbours)
 
@@ -53,6 +55,35 @@
 
 (defn filter_visited [visited, neighbours] 
   (filter #(not (contains? visited %)) neighbours)
+)
+
+(defn grid_row_rep [cell]
+  (if (some #(= [(inc (:x cell)) (:y cell)] %) (:neighbours cell))
+    "O-"
+    "O "
+  )
+)
+
+(defn grid_top_rep [cell]
+  (if (some #(= [(:x cell) (inc (:y cell))] %) (:neighbours cell))
+    "| "
+    "  "
+  )
+)
+
+(defn print_row [row]
+  (let [grid_row (map #(grid_row_rep (get row %)) (keys row))
+        grid_top_row (map #(grid_top_rep (get row %)) (keys row))]
+     (if (not (blank? (join "" grid_top_row)))
+       (join "\n" [(join "" grid_top_row) (join "" grid_row) ""])
+       (str (join "" grid_row) "\n")
+     )
+  )
+)
+
+(comment )
+(defn print_grid [grid] 
+  (join "" (map #(print_row (get grid %)) (reverse (keys grid))))
 )
 
 (defn grid[size]

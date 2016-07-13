@@ -11,7 +11,7 @@
    ])
 )
 
-(defn carve_wall [from_list, visited, graph, size]
+(defn carve_binary_wall [from_list, visited, graph, size]
   (if (not (empty? from_list))
     (let [shuffle_from (shuffle from_list)
           rnd_from (first shuffle_from)
@@ -22,9 +22,9 @@
               filtered_from (filter #((and (= (:x rnd_from) (:x %)) (= (:y rnd_from) (:y %)))) from_list)
               existing_neighbours (get-in graph [(:y rnd_from) (:x rnd_from) :neighbours])
               updated_graph (assoc-in graph [(:y rnd_from) (:x rnd_from) :neighbours] (into [] (conj existing_neighbours ne_neighbour)))]
-          (carve_wall (rest shuffle_from) (conj visited rnd_from) updated_graph size)
+          (carve_binary_wall (rest shuffle_from) (conj visited rnd_from) updated_graph size)
         )
-        (carve_wall (rest shuffle_from) (conj visited rnd_from) graph size)
+        (carve_binary_wall (rest shuffle_from) (conj visited rnd_from) graph size)
       )
     )
     graph
@@ -43,6 +43,10 @@
   (let [maze (grid size)
         from (generate_indices size)
         ]
-    (carve_wall (map #(point (get % 0) (get % 1) maze) from) #{} maze size)
+    (carve_binary_wall (map #(point (get % 0) (get % 1) maze) from) #{} maze size)
   )
+)
+
+(defn str_binary_maze [size]
+  (print_grid (carve_binary_maze size))
 )
