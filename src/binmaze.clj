@@ -45,9 +45,7 @@
     (if (empty? neighbours)
       (let [unvisited_cell (next_unused graph size visited)]
         (if (not (= unvisited_cell nil))
-          (let [] 
-            (next_step (get-in graph [(get unvisited_cell 1) (get unvisited_cell 0)]) graph (conj visited unvisited_cell) size)
-          )
+          (next_step (get-in graph [(get unvisited_cell 1) (get unvisited_cell 0)]) graph (conj visited unvisited_cell) size)
           [nil graph visited]
         )
         [(get-in graph [(get unvisited_cell 1) (get unvisited_cell 0)])
