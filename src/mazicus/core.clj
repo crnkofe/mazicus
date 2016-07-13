@@ -4,6 +4,7 @@
 (use 'clojure.pprint)
 (use 'common)
 (use 'simple)
+(use 'binary)
 
 (defn updateConnection [connection x y value]
   (

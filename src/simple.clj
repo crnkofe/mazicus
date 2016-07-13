@@ -3,6 +3,8 @@
 (use 'common)
 (use 'clojure.pprint)
 
+(comment "this is still not proper binary maze carving algorithm because it doesn't follow a path")
+
 (defn generate_ne[x, y, size]
   (filter 
    #(is_valid_cell (get % 0) (get % 1) size) 
