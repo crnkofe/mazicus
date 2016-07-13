@@ -4,7 +4,7 @@
 (use 'clojure.pprint)
 (use 'common)
 (use 'simple)
-(use 'binary)
+(use 'binmaze)
 
 (defn updateConnection [connection x y value]
   (
@@ -24,7 +24,6 @@
   )
 )
 
-(comment "All depth-first maze traversals from point")
 (defn visit_graph [graph] 
   (visit_graph_next (point 0 0 graph) #{} graph 0)
 )
