@@ -5,6 +5,7 @@
 (use 'common)
 (use 'simple)
 (use 'binmaze)
+(use 'sidewinder)
 
 (defn updateConnection [connection x y value]
   (

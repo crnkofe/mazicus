@@ -13,20 +13,6 @@
    ])
 )
 
-(defn carve_bin_alg_cell [idx, cell, size]
-  {
-    idx 
-    (let [neighbours (generate_bin_ne (:x cell) (:y cell) size)]
-      (if (empty? neighbours)
-        cell
-        (let [ne_neighbour (rand-nth neighbours)]
-          (assoc-in cell [:neighbours] [ne_neighbour])
-        )
-      )
-    )
-  }
-)
-
 (defn next_unused [graph, size, visited]
   (if (>= (count (distinct visited)) (* size size))
     nil 

@@ -31,6 +31,15 @@
   )
 )
 
+(defn is_valid_grid_cell [x, y, grid]
+  (let [found (get-in grid [y x])]
+    (if (= nil found)
+      false
+      true
+    )
+  )
+)
+
 (defn generate_neighbours [x, y, size]
   (filter 
    #(is_valid_cell (get % 0) (get % 1) size) 
