@@ -7,6 +7,9 @@
 (use 'binmaze)
 (use 'sidewinder)
 
+(ns quil-intro
+  (:require [quil.core :as q]))
+
 (defn updateConnection [connection x y value]
   (
    into (sorted-map) (merge
@@ -16,36 +19,19 @@
   )
 )
 
-(defn visit_graph_next [node, visited, graph, depth]
-  (if (< depth 10)
-    (let [visited_new (conj visited [(:x node) (:y node)])]
-      (map #(visit_graph_next (point (get % 0) (get % 1) graph) visited_new graph (inc depth)) (filter_visited visited_new (:neighbours node)) )
-    )
-    :default
-  )
+
+(defn draw []
+  (q/background 255)
+  (q/with-translation [(/ (q/width) 2) (/ (q/height) 2)]
+   (doseq [t (range 0 100 0.01)]
+     (q/point (* t (q/sin t))
+              (* t (q/cos t))))))
+
+(q/defsketch trigonometry
+  :size [300 300]
+  :draw draw
 )
 
-(defn visit_graph [graph] 
-  (visit_graph_next (point 0 0 graph) #{} graph 0)
-)
-
-(defn visit_graph_breadth_next [priority, visited, graph]
-  (let [node (first priority)
-        visited_new (conj visited [(:x node) (:y node)])]
-    (if (not node) :default
-      (let [priority_new (into [] (concat (rest priority) (map #(point (get % 0) (get % 1) graph) (filter_visited visited_new (:neighbours node)))))]
-        (visit_graph_breadth_next priority_new visited_new graph))
-    )
-  )
-  :default
-)
-
-(comment "All breadth-first maze traversals from point")
-(defn visit_graph_breadth [graph] 
-  (visit_graph_breadth_next [(point 0 0 graph)] #{} graph)
-)
-
-(defn -main
-  [& args]
-  (pprint (connection 5))
+(defn -main [ ] 
+  (sketch :title "your title" :size [your-width your-height] :setup setup :draw draw)
 )
