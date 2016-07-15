@@ -84,7 +84,8 @@
 
 (defn draw_maze [maze]
   (let [row_keys (reverse (sort (keys maze)))
-        cell_size {:x 40 :y 40}
+        size (count (keys maze))
+        cell_size {:x (/ 550 size) :y (/ 550 size)}
         initial_row_y 0]
     (loop [current_key (first row_keys)
            row_keys (into [] (rest row_keys))
