@@ -17,16 +17,11 @@
      (q/point (* t (q/sin t))
               (* t (q/cos t))))))
 
-(q/defsketch trigonometry
-  :size [640 480]
-  :draw draw
-)
-
 (defn setup []
   (q/frame-rate 1)
   (q/background 200)
 )
 
 (defn -main [& args] 
-  (q/sketch :title "Mazicus!" :size [640 480] :setup setup :draw draw)
+  (q/sketch :title "Mazicus!" :setup setup :draw draw)
 )
