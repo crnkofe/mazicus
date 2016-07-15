@@ -1,24 +1,14 @@
 (ns mazicus.core
-  (:gen-class))
+  (:gen-class)
+  (:require [clojure.tools.cli :refer [parse-opts]])
+  (:require [quil.core :as q])
+)
 
 (use 'clojure.pprint)
 (use 'common)
 (use 'simple)
 (use 'binmaze)
 (use 'sidewinder)
-
-(ns quil-intro
-  (:require [quil.core :as q]))
-
-(defn updateConnection [connection x y value]
-  (
-   into (sorted-map) (merge
-      (into {} (filter (fn [[k v]] (not= k y)) connection))
-      {y (assoc (get connection y) x value)}
-    )
-  )
-)
-
 
 (defn draw []
   (q/background 255)
@@ -28,10 +18,15 @@
               (* t (q/cos t))))))
 
 (q/defsketch trigonometry
-  :size [300 300]
+  :size [640 480]
   :draw draw
 )
 
-(defn -main [ ] 
-  (sketch :title "your title" :size [your-width your-height] :setup setup :draw draw)
+(defn setup []
+  (q/frame-rate 1)
+  (q/background 200)
+)
+
+(defn -main [& args] 
+  (q/sketch :title "Mazicus!" :size [640 480] :setup setup :draw draw)
 )
