@@ -59,11 +59,18 @@
   )
 )
 
-(defn draw_maze_cell [cell, x, y, cell_size, size]
+(defn draw_maze_cell [cell, x, y, cell_size, size, distances]
   (let [left (neighbour cell :left size)
         right (neighbour cell :right size)
         top (neighbour cell :top size)
-        bottom (neighbour cell :bottom size)]
+        bottom (neighbour cell :bottom size)
+        max_val (apply max (vals distances))
+        current_val (get distances cell 0)
+        div_val (/ current_val max_val)]
+    (q/fill 255 0 0 (* div_val 255))
+    (q/no-stroke)
+    (q/rect x y (:x cell_size) (:y cell_size))
+    (q/stroke 0 0 0)
     (if (not (is_valid_cell (get left 0) (get left 1) size))
       (q/line x y x (+ y (:y cell_size)))
     )
@@ -79,19 +86,20 @@
   )
 )
 
-(defn draw_maze_row [row, row_y, cell_size, size]
-  (doall (map #(draw_maze_cell % (* (:x %) (:x cell_size)) row_y cell_size size) (map #(get row %) (sort (keys row)))))
+(defn draw_maze_row [row, row_y, cell_size, size, distance]
+  (doall (map #(draw_maze_cell % (* (:x %) (:x cell_size)) row_y cell_size size distance) (map #(get row %) (sort (keys row)))))
 )
 
-(defn draw_maze [maze]
-  (let [row_keys (reverse (sort (keys maze)))
+(defn draw_maze [data]
+  (let [[maze, dkstr] data
+        row_keys (reverse (sort (keys maze)))
         size (count (keys maze))
         cell_size {:x (/ 550 size) :y (/ 550 size)}
         initial_row_y 0]
     (loop [current_key (first row_keys)
            row_keys (into [] (rest row_keys))
            row_y initial_row_y]
-      (draw_maze_row (get maze current_key) row_y cell_size (count (keys maze)))
+      (draw_maze_row (get maze current_key) row_y cell_size (count (keys maze)) dkstr)
       (if (not (empty? row_keys))
         (recur (first row_keys) (rest row_keys) (+ row_y (:y cell_size)))
         nil
@@ -109,7 +117,7 @@
     (q/sketch 
       :title "Mazicus!" 
       :setup (partial setup maze)
-      :draw (partial draw maze)
+      :draw (partial draw [maze, dkstr])
       :size [800 600]
     )
   )
