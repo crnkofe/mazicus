@@ -9,6 +9,7 @@
 (use 'simple)
 (use 'binmaze)
 (use 'sidewinder)
+(use 'graph)
 (use '[clojure.string :only (join)])
 
 (declare draw_maze)
@@ -103,7 +104,8 @@
   (let [opts (parse-opts args cli-options)
         algorithm (get-in opts [:options :algorithm])
         size (get-in opts [:options :size])
-        maze (generate_maze algorithm size)]
+        maze (generate_maze algorithm size)
+        dkstr (dijkstra maze) ]
     (q/sketch 
       :title "Mazicus!" 
       :setup (partial setup maze)

@@ -20,7 +20,6 @@
   )
 )
 
-
 (defn is_valid_cell [[x, y], size]
   (is_valid_cell x y size)
 )
