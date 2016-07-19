@@ -65,6 +65,14 @@
   )
 )
 
+(defn connect_nodes [n1, n2, maze]
+  (let [idx1 [(:y n1) (:x n1) :neighbours]
+        idx2 [(:y n2) (:x n2) :neighbours]
+        maze1 (assoc-in maze idx1 (conj (get-in maze idx1) [(:x n2) (:y n2)]))]
+    (assoc-in maze1 idx2 (conj (get-in maze idx2) [(:x n1) (:y n1)]))
+  )
+)
+
 (defn connection [size]
   (into (sorted-map) (reduce conj (map #(hash-map % (generate_row % size)) (range size))))
 )
