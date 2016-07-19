@@ -12,11 +12,12 @@
 (use 'graph)
 (use 'aldousbroder)
 (use 'wilson)
+(use 'huntnkill)
 (use '[clojure.string :only (join)])
 
 (declare draw_maze)
 
-(def algorithms #{:binary :sidewinder :aldousbroder :wilson})
+(def algorithms #{:binary :sidewinder :aldousbroder :wilson :huntnkill})
 
 (defn draw [maze]
   (q/background 255)
@@ -51,6 +52,7 @@
     :sidewinder (generate_sidewinder_path size)
     :aldousbroder (carve_aldbro_maze size)
     :wilson (carve_wilson_maze size)
+    :huntnkill (carve_huntnkill_maze size)
     :default (carve_bin_alg_maze size))
 )
 
