@@ -79,6 +79,7 @@
         (q/rect x y (:x cell_size) (:y cell_size))
       )
     )
+    (q/stroke-weight 2)
     (q/stroke 0 0 0)
     (if (not (is_valid_cell (get left 0) (get left 1) size))
       (q/line x y x (+ y (:y cell_size)))
