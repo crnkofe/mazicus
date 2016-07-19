@@ -1,6 +1,8 @@
 (ns common)
+
 (use 'clojure.pprint)
 (use '[clojure.string :only (join split blank?)])
+(use '[clojure.set :only (difference, union)])
 
 (declare generate_neighbours)
 
@@ -50,6 +52,17 @@
    [
     [(dec x) y] [(inc x) y] [x (dec y)] [x (inc y)]
    ])
+)
+
+(defn contains_node [node, neighbours]
+  (some #(= % [(:x node) (:y node)]) neighbours)
+)
+
+(defn connected_neighbours [node, maze]
+  (let [linked_neighbours (map #(point (get % 0) (get % 1) maze) (:neighbours node))
+        reverse_linked_neighbours (filter #(contains_node node (:neighbours %)) (reduce concat (map vals (vals maze))))]
+    (into [] (union (into #{} linked_neighbours) (into #{} reverse_linked_neighbours)))
+  )
 )
 
 (defn connection [size]

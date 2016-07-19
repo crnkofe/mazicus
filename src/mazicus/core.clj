@@ -10,11 +10,12 @@
 (use 'binmaze)
 (use 'sidewinder)
 (use 'graph)
+(use 'aldousbroder)
 (use '[clojure.string :only (join)])
 
 (declare draw_maze)
 
-(def algorithms #{:binary :sidewinder})
+(def algorithms #{:binary :sidewinder :aldousbroder})
 
 (defn draw [maze]
   (q/background 255)
@@ -47,6 +48,7 @@
   (case algorithm
     :binary (carve_bin_alg_maze size)
     :sidewinder (generate_sidewinder_path size)
+    :aldousbroder (carve_aldbro_maze size)
     :default (carve_bin_alg_maze size))
 )
 

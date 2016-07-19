@@ -4,17 +4,6 @@
 (use '[clojure.set :only (difference, union)])
 
 
-(defn contains_node [node, neighbours]
-  (some #(= % [(:x node) (:y node)]) neighbours)
-)
-
-(defn actual_neighbours [node, maze]
-  (let [linked_neighbours (map #(point (get % 0) (get % 1) maze) (:neighbours node))
-        reverse_linked_neighbours (filter #(contains_node node (:neighbours %)) (reduce concat (map vals (vals maze))))]
-    (into [] (union (into #{} linked_neighbours) (into #{} reverse_linked_neighbours)))
-  )
-)
-
 (defn dijkstra_update_distance [distances, from, node]
   (if (contains? distances node)
     (if (< (+ (get distances from 0) 1) (get distances node))
@@ -49,7 +38,7 @@
            visited #{}
            distances {start_node 0}]
       (if (> (count unvisited) 0)
-        (let [neighbours (into [] (difference (into #{} (actual_neighbours node maze)) visited))
+        (let [neighbours (into [] (difference (into #{} (connected_neighbours node maze)) visited))
               updated_distances (dijkstra_update_distances distances node neighbours)
               new_unvisited (filter #(not= % node) (concat unvisited neighbours))]
           (if (empty? new_unvisited)
