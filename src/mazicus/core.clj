@@ -11,11 +11,12 @@
 (use 'sidewinder)
 (use 'graph)
 (use 'aldousbroder)
+(use 'wilson)
 (use '[clojure.string :only (join)])
 
 (declare draw_maze)
 
-(def algorithms #{:binary :sidewinder :aldousbroder})
+(def algorithms #{:binary :sidewinder :aldousbroder :wilson})
 
 (defn draw [maze]
   (q/background 255)
@@ -49,6 +50,7 @@
     :binary (carve_bin_alg_maze size)
     :sidewinder (generate_sidewinder_path size)
     :aldousbroder (carve_aldbro_maze size)
+    :wilson (carve_wilson_maze size)
     :default (carve_bin_alg_maze size))
 )
 
@@ -67,11 +69,14 @@
         top (neighbour cell :top size)
         bottom (neighbour cell :bottom size)
         max_val (apply max (vals distances))
-        current_val (get distances cell 0)
-        div_val (/ current_val max_val)]
-    (q/fill 255 0 0 (* div_val 255))
-    (q/no-stroke)
-    (q/rect x y (:x cell_size) (:y cell_size))
+        current_val (get distances cell 0)]
+    (if (> current_val 0)
+      (let [div_val (/ current_val max_val)]
+        (q/fill 255 0 0 (* div_val 255))
+        (q/no-stroke)
+        (q/rect x y (:x cell_size) (:y cell_size))
+      )
+    )
     (q/stroke 0 0 0)
     (if (not (is_valid_cell (get left 0) (get left 1) size))
       (q/line x y x (+ y (:y cell_size)))

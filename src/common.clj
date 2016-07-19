@@ -54,6 +54,10 @@
    ])
 )
 
+(defn all_nodes [maze]
+  (reduce concat (map vals (vals maze)))
+)
+
 (defn contains_node [node, neighbours]
   (some #(= % [(:x node) (:y node)]) neighbours)
 )
@@ -69,7 +73,7 @@
   (let [idx1 [(:y n1) (:x n1) :neighbours]
         idx2 [(:y n2) (:x n2) :neighbours]
         maze1 (assoc-in maze idx1 (conj (get-in maze idx1) [(:x n2) (:y n2)]))]
-    (assoc-in maze1 idx2 (conj (get-in maze idx2) [(:x n1) (:y n1)]))
+    (assoc-in maze1 idx2 (conj (get-in maze1 idx2) [(:x n1) (:y n1)]))
   )
 )
 
