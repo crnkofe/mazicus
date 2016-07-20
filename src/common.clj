@@ -8,8 +8,9 @@
 
 (defrecord Cell [x,y,neighbours])
 
-(defn point [x, y, graph] 
-  (get (get graph y) x)
+(defn point 
+  ([x, y, graph] (get (get graph y) x))
+  ([point, graph] (get (get graph (get point 1)) (get point 0)))
 )
 
 (defn generate_row [idx, size] 
@@ -60,6 +61,10 @@
 
 (defn contains_node [node, neighbours]
   (some #(= % [(:x node) (:y node)]) neighbours)
+)
+
+(defn coords [node]
+  [(:x node) (:y node)]
 )
 
 (defn connected_neighbours [node, maze]

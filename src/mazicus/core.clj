@@ -13,11 +13,12 @@
 (use 'aldousbroder)
 (use 'wilson)
 (use 'huntnkill)
+(use 'recursivebacktracker)
 (use '[clojure.string :only (join)])
 
 (declare draw_maze)
 
-(def algorithms #{:binary :sidewinder :aldousbroder :wilson :huntnkill})
+(def algorithms #{:binary :sidewinder :aldousbroder :wilson :huntnkill :backtrack})
 
 (defn draw [maze]
   (q/background 255)
@@ -53,6 +54,7 @@
     :aldousbroder (carve_aldbro_maze size)
     :wilson (carve_wilson_maze size)
     :huntnkill (carve_huntnkill_maze size)
+    :backtrack (carve_recursive_backtrack_maze size)
     :default (carve_bin_alg_maze size))
 )
 
@@ -79,6 +81,7 @@
         (q/rect x y (:x cell_size) (:y cell_size))
       )
     )
+    (q/stroke-weight 2)
     (q/stroke 0 0 0)
     (if (not (is_valid_cell (get left 0) (get left 1) size))
       (q/line x y x (+ y (:y cell_size)))
@@ -122,7 +125,9 @@
         algorithm (get-in opts [:options :algorithm])
         size (get-in opts [:options :size])
         maze (generate_maze algorithm size)
-        dkstr (dijkstra maze) ]
+        dkstr (dijkstra maze)
+        dead_end_count (dead_ends maze size)]
+    (println "Dead ends:" dead_end_count)
     (q/sketch 
       :title "Mazicus!" 
       :setup (partial setup maze)

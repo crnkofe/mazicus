@@ -53,3 +53,22 @@
     )
   )
 )
+
+(defn dead_end [coords, maze]
+  (if (= 1 (count (connected_neighbours (point coords maze) maze)))
+    1
+    0
+  )
+)
+
+(defn dead_ends [maze, size]
+  (loop [row_keys (reverse (sort (keys maze)))
+         total 0]
+    (if (not (empty? row_keys))
+      (let [current_row_total (reduce + (map #(dead_end % maze) (map #(vector % (first row_keys)) (range size))))]
+        (recur (rest row_keys) (+ current_row_total total))
+      )
+      total
+    )
+  )
+)
