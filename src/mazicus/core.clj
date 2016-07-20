@@ -6,7 +6,6 @@
 
 (use 'clojure.pprint)
 (use 'common)
-(use 'simple)
 (use 'binmaze)
 (use 'sidewinder)
 (use 'graph)
