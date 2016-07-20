@@ -8,7 +8,7 @@
 
 (defrecord Cell [x, y, neighbours])
 
-(defrecord Grid [cells, size])
+(defrecord Grid [cells, size, all_indices])
 
 (defn point 
   ([x, y, graph] (get (get (:cells graph) y) x))
@@ -79,7 +79,8 @@
 
 (defn connected_neighbours [node, maze]
   (let [linked_neighbours (map #(point % maze) (:neighbours node))
-        reverse_linked_neighbours (filter #(contains_node node (:neighbours %)) (all_maze_cells maze))]
+        neighbours (map #(point % maze) (generate_neighbours (coords node) (:size maze)))
+        reverse_linked_neighbours (filter #(contains_node node (:neighbours %)) neighbours)]
     (into [] (union (into #{} linked_neighbours) (into #{} reverse_linked_neighbours)))
   )
 )
@@ -139,5 +140,11 @@
 )
 
 (defn grid[size]
-  (->Grid (into (sorted-map) (reduce conj (map #(hash-map % (generate_grid_row % size)) (range size)))) size)
+  (let [grid (into (sorted-map) (reduce conj (map #(hash-map % (generate_grid_row % size)) (range size))))]
+    (->Grid 
+      grid
+      size 
+      (into #{} (map coords (reduce concat (map vals (vals grid)))))
+    )
+  )
 )

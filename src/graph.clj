@@ -1,4 +1,9 @@
-(ns graph)
+(ns graph
+  (:require [taoensso.tufte :as tufte :refer (defnp p profiled profile)])
+)
+
+;; We'll request to send `profile` stats to `println`:
+(tufte/add-basic-println-handler! {})
 
 (use 'common)
 (use '[clojure.set :only (difference, union)])
@@ -65,7 +70,8 @@
   (loop [row_keys (reverse (sort (keys (:cells maze))))
          total 0]
     (if (not (empty? row_keys))
-      (let [current_row_total (reduce + (map #(dead_end % maze) (map #(vector % (first row_keys)) (range (:size maze)))))]
+      (let [current_row_keys (map #(dead_end % maze) (map #(vector % (first row_keys)) (range (:size maze))))
+            current_row_total (p ::total (reduce + current_row_keys))]
         (recur (rest row_keys) (+ current_row_total total))
       )
       total

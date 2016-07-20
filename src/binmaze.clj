@@ -4,7 +4,6 @@
 (use 'clojure.pprint)
 (use '[clojure.set :only (difference)])
 
-
 (defn generate_bin_ne[x, y, size]
   (filter 
    #(is_valid_cell % size)
@@ -14,10 +13,9 @@
 )
 
 (defn next_unused [graph, visited]
-  (if (>= (count (distinct visited)) (* (:size graph) (:size graph)))
+  (if (>= (count visited) (* (:size graph) (:size graph)))
     nil 
-    (let [all_indices (map coords (all_nodes graph))
-          differ (into [] (difference (into #{} all_indices) (into #{} visited)))]
+    (let [differ (into [] (difference (:all_indices graph) visited))]
       (if (empty? differ)
         nil
         (rand-nth differ)
@@ -52,7 +50,7 @@
         initial_cell (point [0 0] initial_maze)]
     (loop [current_cell initial_cell
            updated_maze initial_maze
-           current_visited [(coords initial_cell)]]
+           current_visited #{(coords initial_cell)}]
       (if-not (= current_cell nil)
         (let [[cell maze visited] (next_step current_cell updated_maze current_visited)]
           (recur cell maze visited)

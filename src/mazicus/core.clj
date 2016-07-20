@@ -2,7 +2,11 @@
   (:gen-class)
   (:require [clojure.tools.cli :refer [parse-opts]])
   (:require [quil.core :as q])
+  (:require [taoensso.tufte :as tufte :refer (defnp p profiled profile)])
 )
+
+;; We'll request to send `profile` stats to `println`:
+(tufte/add-basic-println-handler! {})
 
 (use 'clojure.pprint)
 (use 'common)
@@ -120,18 +124,22 @@
 )
 
 (defn -main [& args] 
-  (let [opts (parse-opts args cli-options)
-        algorithm (get-in opts [:options :algorithm])
-        size (get-in opts [:options :size])
-        maze (generate_maze algorithm size)
-        dkstr (dijkstra maze)
-        dead_end_count (dead_ends maze)]
-    (println "Dead ends:" dead_end_count)
-    (q/sketch 
-      :title "Mazicus!" 
-      :setup (partial setup maze)
-      :draw (partial draw [maze, dkstr])
-      :size [800 600]
+  (profile
+    {}
+    (println "KVA")
+    (let [opts (parse-opts args cli-options)
+          algorithm (get-in opts [:options :algorithm])
+          size (get-in opts [:options :size])
+          maze (p ::algoritem (generate_maze algorithm size))
+          dkstr (p ::dijsktra (dijkstra maze))
+          dead_end_count (p ::dead (dead_ends maze))]
+      (println "Dead ends:" dead_end_count)
+      (q/sketch 
+        :title "Mazicus!" 
+        :setup (partial setup maze)
+        :draw (partial draw [maze, dkstr])
+        :size [800 600]
+      )
     )
   )
 )
