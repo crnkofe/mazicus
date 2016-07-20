@@ -104,14 +104,14 @@
 
 (defn draw_maze [data]
   (let [[maze, dkstr] data
-        row_keys (reverse (sort (keys maze)))
-        size (count (keys maze))
+        row_keys (reverse (sort (keys (:cells maze))))
+        size (count (keys (:cells maze)))
         cell_size {:x (/ 550 size) :y (/ 550 size)}
         initial_row_y 0]
     (loop [current_key (first row_keys)
            row_keys (into [] (rest row_keys))
            row_y initial_row_y]
-      (draw_maze_row (get maze current_key) row_y cell_size (count (keys maze)) dkstr)
+      (draw_maze_row (get (:cells maze) current_key) row_y cell_size (count (keys (:cells maze))) dkstr)
       (if (not (empty? row_keys))
         (recur (first row_keys) (rest row_keys) (+ row_y (:y cell_size)))
         nil
@@ -126,7 +126,7 @@
         size (get-in opts [:options :size])
         maze (generate_maze algorithm size)
         dkstr (dijkstra maze)
-        dead_end_count (dead_ends maze size)]
+        dead_end_count (dead_ends maze)]
     (println "Dead ends:" dead_end_count)
     (q/sketch 
       :title "Mazicus!" 

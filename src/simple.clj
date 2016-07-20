@@ -7,7 +7,7 @@
 
 (defn generate_ne[x, y, size]
   (filter 
-   #(is_valid_cell (get % 0) (get % 1) size) 
+   #(is_valid_cell [x, y] size) 
    [
     [(inc x) y] [x (inc y)]
    ])
@@ -16,7 +16,7 @@
 (defn carve_binary_cell [idx, cell, size]
   {
     idx 
-    (let [neighbours (generate_ne (:x cell) (:y cell) size)]
+    (let [neighbours (generate_ne (coords cell) size)]
       (if (empty? neighbours)
         cell
         (let [ne_neighbour (rand-nth neighbours)]
@@ -31,13 +31,13 @@
   [idx (reduce merge (map #(carve_binary_cell % (get row %) size) (sort (keys row))))]
 )
 
-(defn carve_binary_wall [graph, size]
-  (into {} (map #(carve_binary_row % (get graph %) size) (sort (keys graph))))
+(defn carve_binary_wall [graph]
+  (into {} (map #(carve_binary_row % (get (:cells graph) %) (:size graph)) (sort (keys (:cells graph)))))
 )
 
 (defn carve_binary_maze [size]
   (let [maze (grid size)]
-    (carve_binary_wall maze size)
+    (->Grid (carve_binary_wall maze) size)
   )
 )
 

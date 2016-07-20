@@ -6,11 +6,13 @@
 
 (declare generate_neighbours)
 
-(defrecord Cell [x,y,neighbours])
+(defrecord Cell [x, y, neighbours])
+
+(defrecord Grid [cells, size])
 
 (defn point 
-  ([x, y, graph] (get (get graph y) x))
-  ([point, graph] (get (get graph (get point 1)) (get point 0)))
+  ([x, y, graph] (get (get (:cells graph) y) x))
+  ([point, graph] (get (get (:cells graph) (get point 1)) (get point 0)))
 )
 
 (defn generate_row [idx, size] 
@@ -23,18 +25,16 @@
   )
 )
 
-(defn is_valid_cell [[x, y], size]
-  (is_valid_cell x y size)
-)
-
-(defn is_valid_cell [x, y, size]
-  (
-    cond 
-      (< x 0) false
-      (>= x size) false
-      (< y 0) false
-      (>= y size) false
-      :else true
+(defn is_valid_cell 
+  ([point, size] (is_valid_cell (get point 0) (get point 1) size))
+  ([x, y, size] (
+      cond 
+        (< x 0) false
+        (>= x size) false
+        (< y 0) false
+        (>= y size) false
+        :else true
+    )
   )
 )
 
@@ -47,16 +47,22 @@
   )
 )
 
-(defn generate_neighbours [x, y, size]
-  (filter 
-   #(is_valid_cell (get % 0) (get % 1) size) 
-   [
-    [(dec x) y] [(inc x) y] [x (dec y)] [x (inc y)]
-   ])
+(defn generate_neighbours 
+  ([coords, size] 
+   (generate_neighbours (get coords 0) (get coords 1) size)
+  )
+  ([x, y, size] 
+    (filter 
+      #(is_valid_cell (get % 0) (get % 1) size) 
+      [
+        [(dec x) y] [(inc x) y] [x (dec y)] [x (inc y)]
+      ]
+    )
+  )
 )
 
 (defn all_nodes [maze]
-  (reduce concat (map vals (vals maze)))
+  (reduce concat (map vals (vals (:cells maze))))
 )
 
 (defn contains_node [node, neighbours]
@@ -67,16 +73,20 @@
   [(:x node) (:y node)]
 )
 
+(defn all_maze_cells [maze]
+  (reduce concat (map vals (vals (:cells maze))))
+)
+
 (defn connected_neighbours [node, maze]
-  (let [linked_neighbours (map #(point (get % 0) (get % 1) maze) (:neighbours node))
-        reverse_linked_neighbours (filter #(contains_node node (:neighbours %)) (reduce concat (map vals (vals maze))))]
+  (let [linked_neighbours (map #(point % maze) (:neighbours node))
+        reverse_linked_neighbours (filter #(contains_node node (:neighbours %)) (all_maze_cells maze))]
     (into [] (union (into #{} linked_neighbours) (into #{} reverse_linked_neighbours)))
   )
 )
 
 (defn connect_nodes [n1, n2, maze]
-  (let [idx1 [(:y n1) (:x n1) :neighbours]
-        idx2 [(:y n2) (:x n2) :neighbours]
+  (let [idx1 [:cells (:y n1) (:x n1) :neighbours]
+        idx2 [:cells (:y n2) (:x n2) :neighbours]
         maze1 (assoc-in maze idx1 (conj (get-in maze idx1) [(:x n2) (:y n2)]))]
     (assoc-in maze1 idx2 (conj (get-in maze1 idx2) [(:x n1) (:y n1)]))
   )
@@ -129,5 +139,5 @@
 )
 
 (defn grid[size]
-  (into (sorted-map) (reduce conj (map #(hash-map % (generate_grid_row % size)) (range size))))
+  (->Grid (into (sorted-map) (reduce conj (map #(hash-map % (generate_grid_row % size)) (range size)))) size)
 )

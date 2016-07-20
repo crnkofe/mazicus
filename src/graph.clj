@@ -31,7 +31,7 @@
 )
 
 (defn dijkstra [maze] 
-  (let [all_nodes (reduce concat (map vals (vals maze)))
+  (let [all_nodes (reduce concat (map vals (vals (:cells maze))))
         start_node (rand-nth all_nodes)]
     (loop [node start_node
            unvisited [start_node]
@@ -61,11 +61,11 @@
   )
 )
 
-(defn dead_ends [maze, size]
-  (loop [row_keys (reverse (sort (keys maze)))
+(defn dead_ends [maze]
+  (loop [row_keys (reverse (sort (keys (:cells maze))))
          total 0]
     (if (not (empty? row_keys))
-      (let [current_row_total (reduce + (map #(dead_end % maze) (map #(vector % (first row_keys)) (range size))))]
+      (let [current_row_total (reduce + (map #(dead_end % maze) (map #(vector % (first row_keys)) (range (:size maze)))))]
         (recur (rest row_keys) (+ current_row_total total))
       )
       total

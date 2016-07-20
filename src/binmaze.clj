@@ -7,16 +7,16 @@
 
 (defn generate_bin_ne[x, y, size]
   (filter 
-   #(is_valid_cell (get % 0) (get % 1) size) 
+   #(is_valid_cell % size)
    [
     [(inc x) y] [x (inc y)]
    ])
 )
 
-(defn next_unused [graph, size, visited]
-  (if (>= (count (distinct visited)) (* size size))
+(defn next_unused [graph, visited]
+  (if (>= (count (distinct visited)) (* (:size graph) (:size graph)))
     nil 
-    (let [all_indices (map #(vector (:x %) (:y %)) (reduce concat (map vals (vals graph))))
+    (let [all_indices (map coords (all_nodes graph))
           differ (into [] (difference (into #{} all_indices) (into #{} visited)))]
       (if (empty? differ)
         nil
@@ -26,21 +26,21 @@
   )
 )
 
-(defn next_step [cell, graph, visited, size]
-  (let [neighbours (generate_bin_ne (:x cell) (:y cell) size)]
+(defn next_step [cell, graph, visited]
+  (let [neighbours (generate_bin_ne (:x cell) (:y cell) (:size graph))]
     (if (empty? neighbours)
-      (let [unvisited_cell (next_unused graph size visited)]
+      (let [unvisited_cell (next_unused graph visited)]
         (if (not (= unvisited_cell nil))
-          (next_step (get-in graph [(get unvisited_cell 1) (get unvisited_cell 0)]) graph (conj visited unvisited_cell) size)
+          (next_step (point unvisited_cell graph) graph (conj visited unvisited_cell))
           [nil graph visited]
         )
-        [(get-in graph [(get unvisited_cell 1) (get unvisited_cell 0)])
+        [(point unvisited_cell graph)
          graph
          (conj visited unvisited_cell)]
       )
       (let [ne_neighbour (rand-nth neighbours)]
-        [(get-in graph [(get ne_neighbour 1) (get ne_neighbour 0)])
-         (assoc-in graph [(:y cell) (:x cell) :neighbours] [ne_neighbour])
+        [(point ne_neighbour graph)
+         (assoc-in graph [:cells (:y cell) (:x cell) :neighbours] [ne_neighbour])
          (conj visited ne_neighbour)]
       )
     )
@@ -49,12 +49,12 @@
 
 (defn carve_bin_alg_maze [size]
   (let [initial_maze (grid size)
-        initial_cell (get-in initial_maze [0 0])]
+        initial_cell (point [0 0] initial_maze)]
     (loop [current_cell initial_cell
            updated_maze initial_maze
-           current_visited [[(:x initial_cell) (:y initial_cell)]]]
+           current_visited [(coords initial_cell)]]
       (if-not (= current_cell nil)
-        (let [[cell maze visited] (next_step current_cell updated_maze current_visited size)]
+        (let [[cell maze visited] (next_step current_cell updated_maze current_visited)]
           (recur cell maze visited)
         )
         updated_maze
