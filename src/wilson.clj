@@ -1,10 +1,10 @@
 (ns wilson)
 
 (use 'common)
-(use '[clojure.set :only (difference)])
+(use '[clojure.set :only (difference, union)])
 
 (defn valid_path_nodes [maze, visited, path]
-  (into [](difference (difference (into #{} (map coords (all_nodes maze))) (into #{} visited)) (into #{} path)))
+  (into [] (difference (difference (:all_indices maze) visited) (into #{} path)))
 )
 
 (defn wilson_carve_path [maze, path]
@@ -45,10 +45,10 @@
   (let [initial_maze (grid size)
         initial_cell (point [(rand-int size) (rand-int size)] initial_maze)]
     (loop [updated_maze initial_maze
-           current_visited [(coords initial_cell)]]
+           current_visited #{(coords initial_cell)}]
       (if-not (= (count current_visited) (* size size))
         (let [new_path (wilson_loop_erased_path updated_maze current_visited)
-              new_visited (concat current_visited (butlast new_path))
+              new_visited (union current_visited (into #{} (butlast new_path)))
               new_maze (wilson_carve_path updated_maze new_path)]
           (recur new_maze new_visited)
         )
