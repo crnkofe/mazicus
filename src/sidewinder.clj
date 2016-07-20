@@ -2,7 +2,7 @@
 
 (use 'common)
 (use 'clojure.pprint)
-(use '[clojure.set :only (difference)])
+(use '[clojure.set :only (difference, union)])
 
 (defn carve_top [cell graph]
   (if (is_valid_cell [(:x cell) (inc (:y cell))] (:size graph))
@@ -24,12 +24,12 @@
 (defn sidewinder_next [path, graph, visited]
   (let [last_node (first (reverse path))
         coin_flip (rand-nth [:carve_east :join_path])
-        north_side (not (is_valid_cell (:x last_node) (inc (:y last_node)) (:size graph)))
-        right_visited (> 0 (count (filter #(and (= (:x %) (inc (:x last_node))) (= (:y %) (:y last_node))) visited)))]
-    (if (or north_side (and (not right_visited) (= coin_flip :carve_east)))
+        no_north_side (not (is_valid_cell (:x last_node) (inc (:y last_node)) (:size graph)))
+        no_right_side (not (is_valid_cell (inc (:x last_node)) (:y last_node) (:size graph)))]
+    (if (and (not no_right_side) (or no_north_side  (= coin_flip :carve_east)))
       (if (is_valid_cell (inc (:x last_node)) (:y last_node) (:size graph))
         (let []
-         [(conj path (point [(:y last_node) (inc (:x last_node))] graph))
+         [(conj path (point [(inc (:x last_node)) (:y last_node) ] graph))
           (carve_right last_node graph)]
         )
         [path (carve_top last_node graph)]
@@ -42,23 +42,26 @@
 )
 
 (defn sidewinder_path [path, graph, visited]
-  (let [updated_visited (into [] (distinct (concat visited path)))
-        all_indices (map coords (all_nodes graph))
-        differ (into [] (difference (into #{} all_indices) (into #{} (map coords updated_visited))))]
+  (let [updated_visited (union visited (into #{} path))
+        differ (into [] (difference (:all_indices graph) (into #{} (map coords updated_visited))))]
     (if (empty? differ)
       [nil updated_visited]
-      [(first (sort-by #(+ (get % 0) (* 10 (get % 1))) differ)) updated_visited]
+      (let [min_y (apply max (map #(get % 1) differ))
+            min_differ_cells (filter #(= min_y (get % 1)) differ) 
+            min_y_cells (sort-by #(get % 0) min_differ_cells)]
+        [(first min_y_cells) updated_visited]
+      )
     )
   )
 )  
 
 (defn generate_sidewinder_path [size]
   (let [initial_maze (grid size)
-        initial_cell (point [0 0] initial_maze)
+        initial_cell (point [0 (dec size)] initial_maze)
         initial_path [initial_cell]]
     (loop [current_path initial_path
            updated_maze initial_maze
-           current_visited [initial_cell]]
+           current_visited #{initial_cell}]
       (let [[path maze] (sidewinder_next current_path updated_maze current_visited)]
         (if-not (= (count current_path) (count path))
           (recur path maze current_visited)
