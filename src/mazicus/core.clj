@@ -21,12 +21,17 @@
 (use '[clojure.string :only (join)])
 
 (def algorithms #{:binary :sidewinder :aldousbroder :wilson :huntnkill :backtrack})
+(def maze_types #{:square :polar})
 
 (def cli-options
   [["-a" "--algorithm NAME" "Algorithm name"
       :default :binary
       :parse-fn #(keyword %)
       :validate [#(contains? algorithms %) (str "Must be one of given names: " (join ", " (map name algorithms)))]]
+   ["-m" "--maze TYPE" "Maze type"
+      :default :square
+      :parse-fn #(keyword %)
+      :validate [#(contains? maze_types %) (str "Must be one of given names: " (join ", " (map name maze_types)))]]
    ["-s" "--size SIZE" "Maze size"
       :default 10
       :parse-fn #(Integer/parseInt %)
@@ -51,9 +56,9 @@
   (q/background 200)
 )
 
-(defn generate_maze [algorithm, size]
+(defn generate_maze [algorithm, size, maze_type]
   (case algorithm
-    :binary (carve_bin_alg_maze size)
+    :binary (carve_bin_alg_maze size maze_type)
     :sidewinder (generate_sidewinder_path size)
     :aldousbroder (carve_aldbro_maze size)
     :wilson (carve_wilson_maze size)
@@ -68,7 +73,8 @@
     (let [opts (parse-opts args cli-options)
           algorithm (get-in opts [:options :algorithm])
           size (get-in opts [:options :size])
-          maze (p ::algoritem (generate_maze algorithm size))
+          maze_type (get-in opts [:options :maze])
+          maze (p ::algoritem (generate_maze algorithm size maze_type))
           dkstr (p ::dijsktra (dijkstra maze))
           dead_end_count (p ::dead (dead_ends maze))]
       (println "Dead ends:" dead_end_count)

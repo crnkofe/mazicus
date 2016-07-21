@@ -45,8 +45,8 @@
   )
 )
 
-(defn carve_bin_alg_maze [size]
-  (let [initial_maze (grid size)
+(defn carve_bin_alg_maze [size, grid_type]
+  (let [initial_maze (generate_grid size grid_type)
         initial_cell (random_point initial_maze)]
     (loop [current_cell initial_cell
            updated_maze initial_maze

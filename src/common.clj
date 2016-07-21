@@ -212,3 +212,12 @@
     )
   )
 )
+
+
+(defn generate_grid [size, grid_type]
+  (case grid_type
+    :square (grid size)
+    :polar (polar_grid size)
+    :default (grid size)
+  )
+)
