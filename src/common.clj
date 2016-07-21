@@ -4,11 +4,20 @@
 (use '[clojure.string :only (join split blank?)])
 (use '[clojure.set :only (difference, union)])
 
+(declare point)
 (declare generate_neighbours)
 
-(defrecord Cell [x, y, neighbours])
+(defprotocol GridProtocol
+  (random_point [grid]) 
+)
 
-(defrecord Grid [cells, size, all_indices])
+(defrecord Cell [x, y, neighbours])
+(defrecord Grid [cells, size, all_indices, count]
+  GridProtocol
+  (random_point [grid]
+    (point (rand-nth (into [] (:all_indices grid))) grid)
+  )  
+)
 
 (defn point 
   ([x, y, graph] (get (get (:cells graph) y) x))
@@ -140,11 +149,13 @@
 )
 
 (defn grid[size]
-  (let [grid (into (sorted-map) (reduce conj (map #(hash-map % (generate_grid_row % size)) (range size))))]
+  (let [grid (into (sorted-map) (reduce conj (map #(hash-map % (generate_grid_row % size)) (range size))))
+        indices (into #{} (map coords (reduce concat (map vals (vals grid)))))]
     (->Grid 
       grid
       size 
-      (into #{} (map coords (reduce concat (map vals (vals grid)))))
+      indices
+      (count indices)
     )
   )
 )

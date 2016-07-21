@@ -47,7 +47,7 @@
 
 (defn carve_bin_alg_maze [size]
   (let [initial_maze (grid size)
-        initial_cell (point [0 0] initial_maze)]
+        initial_cell (random_point initial_maze)]
     (loop [current_cell initial_cell
            updated_maze initial_maze
            current_visited #{(coords initial_cell)}]

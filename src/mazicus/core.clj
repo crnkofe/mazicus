@@ -126,7 +126,6 @@
 (defn -main [& args] 
   (profile
     {}
-    (println "KVA")
     (let [opts (parse-opts args cli-options)
           algorithm (get-in opts [:options :algorithm])
           size (get-in opts [:options :size])
