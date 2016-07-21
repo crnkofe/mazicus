@@ -23,7 +23,7 @@
            maze initial_maze]
       (if (empty? path_stack)
         maze
-        (let [neighbours (generate_neighbours (coords (last path_stack)) size)
+        (let [neighbours (:valid_neighbours (last path_stack))
               unvisited (into [] (difference (difference (into #{} neighbours) (into #{} (map coords path_stack))) visited))]
             (if (empty? unvisited)
               (let [updated_maze (carve_backtrack path_stack maze)

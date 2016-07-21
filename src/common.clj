@@ -11,7 +11,8 @@
   (random_point [grid]) 
 )
 
-(defrecord Cell [x, y, neighbours])
+(defrecord Cell [x, y, neighbours, valid_neighbours])
+
 (defrecord Grid [cells, size, all_indices, count]
   GridProtocol
   (random_point [grid]
@@ -111,7 +112,7 @@
    into 
    (sorted-map) 
    (
-    reduce conj (map #(hash-map % (->Cell % idx [])) (range size))
+    reduce conj (map #(hash-map % (->Cell % idx [] (generate_neighbours % idx size))) (range size))
    )
   )
 )

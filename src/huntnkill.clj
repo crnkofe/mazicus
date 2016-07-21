@@ -4,7 +4,7 @@
 (use '[clojure.set :only (difference, union, intersection)])
 
 (defn filter_w_visited [index_node, maze, visited]
-  (let [neighbours (generate_neighbours index_node (:size maze))
+  (let [neighbours (:valid_neighbours (point index_node maze))
         visited_neighbours (into [] (intersection (into #{} neighbours) visited))]
     (> (count visited_neighbours) 0)
   )
@@ -29,7 +29,7 @@
 )
 
 (defn valid_neighbours [maze, from, visited]
-  (into [] (difference (into #{} (generate_neighbours (coords from) (:size maze))) visited))
+  (into [] (difference (into #{} (:valid_neighbours from)) visited))
 )
 
 (defn carve_huntnkill_maze [size]
@@ -48,7 +48,7 @@
             (let [hunted_coords (hunt current_cell updated_maze current_visited)
                   hunted (point hunted_coords updated_maze)]
               (if (not (= hunted nil))
-                (let [neighbours (generate_neighbours (coords hunted) size)
+                (let [neighbours (:valid_neighbours hunted)
                       visited_neighbours (into [] (intersection (into #{} neighbours) current_visited))
                       random_from_coords (rand-nth visited_neighbours)
                       random_from (point random_from_coords updated_maze)]

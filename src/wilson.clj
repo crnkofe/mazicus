@@ -28,7 +28,7 @@
            path [node]]
       (if (some #(= node %) visited)
         path
-        (let [next_node (rand-nth (generate_neighbours node (:size maze)))]
+        (let [next_node (rand-nth (:valid_neighbours (point node maze)))]
           (if (some #(= next_node %) path)
             (let [new_start_node (rand-nth (valid_path_nodes maze visited []))]
               (recur new_start_node [new_start_node])
