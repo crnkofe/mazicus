@@ -34,24 +34,16 @@
    ["-h" "--help"]]
 )
 
-(defn draw [maze]
-  (q/background 255)
-  (draw_maze maze)
-  (comment
-  (q/with-translation [(/ (q/width) 2) (/ (q/height) 2)]
-   (doseq [t (range 0 100 0.01)]
-     (q/point (* t (q/sin t))
-              (* t (q/cos t))))))
-  )
-
-(defn draw_polar [maze]
-  (q/background 255)
-  (draw_polar_maze maze)
-  (comment
-  (q/with-translation [(/ (q/width) 2) (/ (q/height) 2)]
-   (doseq [t (range 0 100 0.01)]
-     (q/point (* t (q/sin t))
-              (* t (q/cos t))))))
+(defn draw_maze [data]
+  (let [[maze, dkstr] data]
+    (q/background 255)
+    (draw maze dkstr)
+    (comment
+    (q/with-translation [(/ (q/width) 2) (/ (q/height) 2)]
+     (doseq [t (range 0 100 0.01)]
+       (q/point (* t (q/sin t))
+                (* t (q/cos t))))))
+    )
   )
 
 (defn setup [maze]
@@ -80,7 +72,7 @@
       (q/sketch 
         :title "Mazicus!" 
         :setup (partial setup maze)
-        :draw (partial draw_polar [maze, nil])
+        :draw (partial draw_maze [maze, nil])
         :size [800 600]
       )
     )
@@ -101,7 +93,7 @@
       (q/sketch 
         :title "Mazicus!" 
         :setup (partial setup maze)
-        :draw (partial draw_polar [maze, dkstr])
+        :draw (partial draw_maze [maze, dkstr])
         :size [800 600]
       )
     )
