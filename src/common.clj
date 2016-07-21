@@ -33,7 +33,7 @@
 (defrecord PolarCell [rad, dist, neighbours, valid_neighbours]
   CellProtocol
   (coords [node]
-    [(:x node) (:y node)]
+    [(:rad node) (:dist node)]
   )
 )
 

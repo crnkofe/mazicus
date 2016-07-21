@@ -44,6 +44,16 @@
               (* t (q/cos t))))))
   )
 
+(defn draw_polar [maze]
+  (q/background 255)
+  (draw_polar_maze maze)
+  (comment
+  (q/with-translation [(/ (q/width) 2) (/ (q/height) 2)]
+   (doseq [t (range 0 100 0.01)]
+     (q/point (* t (q/sin t))
+              (* t (q/cos t))))))
+  )
+
 (defn setup [maze]
   (q/frame-rate 1)
   (q/background 200)
@@ -66,6 +76,24 @@
     (let [opts (parse-opts args cli-options)
           algorithm (get-in opts [:options :algorithm])
           size (get-in opts [:options :size])
+          maze (p ::algoritem (polar_grid size))]
+      (q/sketch 
+        :title "Mazicus!" 
+        :setup (partial setup maze)
+        :draw (partial draw_polar [maze, nil])
+        :size [800 600]
+      )
+    )
+  )
+)
+
+(comment
+(defn -main [& args] 
+  (profile
+    {}
+    (let [opts (parse-opts args cli-options)
+          algorithm (get-in opts [:options :algorithm])
+          size (get-in opts [:options :size])
           maze (p ::algoritem (generate_maze algorithm size))
           dkstr (p ::dijsktra (dijkstra maze))
           dead_end_count (p ::dead (dead_ends maze))]
@@ -73,9 +101,10 @@
       (q/sketch 
         :title "Mazicus!" 
         :setup (partial setup maze)
-        :draw (partial draw [maze, dkstr])
+        :draw (partial draw_polar [maze, dkstr])
         :size [800 600]
       )
     )
   )
+)
 )
