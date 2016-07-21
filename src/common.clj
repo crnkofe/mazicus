@@ -75,7 +75,7 @@
   )
   (update_neighbours [grid cell neighbours]
     (let [existing_neighbours (get-in grid [:cells (:dist cell) (:rad cell) :neighbours])]
-      (assoc-in grid [:cells (:dist cell) (:rad cell) :neighbours] existing_neighbours)
+      (assoc-in grid [:cells (:dist cell) (:rad cell) :neighbours] neighbours)
     )
   )
 )
@@ -116,8 +116,8 @@
       cond 
         (< angle 0) false
         (>= angle 360) false
-        (< size 0) false
-        (>= size size) false
+        (< distance 0) false
+        (>= distance size) false
         :else true
     )
   )
@@ -248,7 +248,6 @@
     )
   )
 )
-
 
 (defn generate_grid [size, grid_type]
   (case grid_type

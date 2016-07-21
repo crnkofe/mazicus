@@ -24,6 +24,7 @@
 
 (defn next_step [cell, graph, visited]
   (let [neighbours (generate_bin_ne cell graph)]
+    (println cell neighbours)
     (if (empty? neighbours)
       (let [unvisited_cell (next_unused graph visited)]
         (if (not (= unvisited_cell nil))
@@ -35,6 +36,7 @@
          (conj visited unvisited_cell)]
       )
       (let [ne_neighbour (rand-nth neighbours)]
+        (println ne_neighbour)
         [(point ne_neighbour graph)
          (update_neighbours graph cell [ne_neighbour])
          (conj visited ne_neighbour)]
