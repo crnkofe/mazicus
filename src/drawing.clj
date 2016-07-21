@@ -75,8 +75,22 @@
   )
 )
 
-(defn draw_polar_maze_cell [cell, cell_size, size, distances]
-  nil
+(defn draw_polar_maze_cell [cell, cell_size, size, distances, center]
+  (let [cell_degrees (/ 360 size)
+        rad1 (Math/toRadians (:rad cell)) 
+        rad2 (Math/toRadians (+ (:rad cell) cell_degrees))
+        right_bot [(+ (:x center) (* (:length cell_size) (Math/cos rad1) (:dist cell))) 
+                   (+ (:y center) (* (:length cell_size) (Math/sin rad1) (:dist cell)))]
+        right_top [(+ (:x center) (* (:length cell_size) (Math/cos rad1) (inc (:dist cell))))
+                   (+ (:y center) (* (:length cell_size) (Math/sin rad1) (inc (:dist cell))))]
+        left_bot [(+ (:x center) (* (:length cell_size) (Math/cos rad2) (:dist cell)))
+                  (+ (:y center) (* (:length cell_size) (Math/sin rad2) (:dist cell)))]
+        left_top [(+ (:x center) (* (:length cell_size) (Math/cos rad2) (inc (:dist cell))))
+                  (+ (:y center) (* (:length cell_size) (Math/sin rad2) (inc (:dist cell))))]]
+    (q/line right_bot right_top)
+    (q/line left_bot left_top)
+    (q/line right_top left_top)
+  )
 )
 
 (comment
@@ -110,8 +124,8 @@
   )
 )
 
-(defn draw_polar_maze_row [row, row_y, cell_size, size, distance]
-  (doall (map #(draw_polar_maze_cell % cell_size size distance) (map #(get row %) (sort (keys row)))))
+(defn draw_polar_maze_row [row, row_y, cell_size, size, distance, center]
+  (doall (map #(draw_polar_maze_cell % cell_size size distance center) (map #(get row %) (sort (keys row)))))
 )
 
 (defn draw_polar_maze [data]\
@@ -120,11 +134,13 @@
         size (count (keys (:cells maze)))
         radius (/ 550 2)
         cell_size {:length (/ radius size)}
-        initial_row_y 0]
+        initial_row_y 0
+        center {:x (/ 550 2) :y (/ 550 2)}
+        ]
     (loop [current_key (first row_keys)
            row_keys (into [] (rest row_keys))
            row_y initial_row_y]
-      (draw_polar_maze_row (get (:cells maze) current_key) row_y cell_size (count (keys (:cells maze))) dkstr)
+      (draw_polar_maze_row (get (:cells maze) current_key) row_y cell_size (count (keys (:cells maze))) dkstr center)
       (if (not (empty? row_keys))
         (recur (first row_keys) (rest row_keys) (+ row_y (:length cell_size)))
         nil

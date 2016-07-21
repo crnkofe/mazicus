@@ -49,7 +49,6 @@
   ([point, graph] (get (get (:cells graph) (get point 1)) (get point 0)))
 )
 
-
 (defn generate_neighbours [coords, size] 
   (let [x (get coords 0)
         y (get coords 1)]
