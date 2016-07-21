@@ -68,24 +68,6 @@
     (let [opts (parse-opts args cli-options)
           algorithm (get-in opts [:options :algorithm])
           size (get-in opts [:options :size])
-          maze (p ::algoritem (polar_grid size))]
-      (q/sketch 
-        :title "Mazicus!" 
-        :setup (partial setup maze)
-        :draw (partial draw_maze [maze, nil])
-        :size [800 600]
-      )
-    )
-  )
-)
-
-(comment
-(defn -main [& args] 
-  (profile
-    {}
-    (let [opts (parse-opts args cli-options)
-          algorithm (get-in opts [:options :algorithm])
-          size (get-in opts [:options :size])
           maze (p ::algoritem (generate_maze algorithm size))
           dkstr (p ::dijsktra (dijkstra maze))
           dead_end_count (p ::dead (dead_ends maze))]
@@ -98,5 +80,4 @@
       )
     )
   )
-)
 )
