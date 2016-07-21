@@ -22,6 +22,18 @@
 
 (def algorithms #{:binary :sidewinder :aldousbroder :wilson :huntnkill :backtrack})
 
+(def cli-options
+  [["-a" "--algorithm NAME" "Algorithm name"
+      :default :binary
+      :parse-fn #(keyword %)
+      :validate [#(contains? algorithms %) (str "Must be one of given names: " (join ", " (map name algorithms)))]]
+   ["-s" "--size SIZE" "Maze size"
+      :default 10
+      :parse-fn #(Integer/parseInt %)
+      :validate [#(< % 1000) "Must be a number between 0 and 100"]]
+   ["-h" "--help"]]
+)
+
 (defn draw [maze]
   (q/background 255)
   (draw_maze maze)
@@ -36,18 +48,6 @@
   (q/frame-rate 1)
   (q/background 200)
 )
-
-(def cli-options
-  [["-a" "--algorithm NAME" "Algorithm name"
-      :default :binary
-      :parse-fn #(keyword %)
-      :validate [#(contains? algorithms %) (str "Must be one of given names: " (join ", " (map name algorithms)))]]
-   ["-s" "--size SIZE" "Maze size"
-      :default 10
-      :parse-fn #(Integer/parseInt %)
-      :validate [#(< % 1000) "Must be a number between 0 and 100"]]
-   ["-h" "--help"]])
-
 
 (defn generate_maze [algorithm, size]
   (case algorithm
