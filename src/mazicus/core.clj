@@ -3,6 +3,12 @@
   (:require [clojure.tools.cli :refer [parse-opts]])
   (:require [quil.core :as q])
   (:require [taoensso.tufte :as tufte :refer (defnp p profiled profile)])
+  (:use [binmaze :only (carve_bin_alg_maze)])
+  (:use [sidewinder :only (generate_sidewinder_path)])
+  (:use [wilson :only (carve_wilson_maze)])
+  (:use [aldousbroder :only (carve_aldbro_maze)])
+  (:use [huntnkill :only (carve_huntnkill_maze)])
+  (:use [recursivebacktracker :only (carve_recursive_backtrack_maze)])
 )
 
 ;; We'll request to send `profile` stats to `println`:
@@ -11,13 +17,7 @@
 (use 'clojure.pprint)
 (use 'drawing)
 (use 'common)
-(use 'binmaze)
-(use 'sidewinder)
 (use 'graph)
-(use 'aldousbroder)
-(use 'wilson)
-(use 'huntnkill)
-(use 'recursivebacktracker)
 (use '[clojure.string :only (join)])
 
 (def algorithms #{:binary :sidewinder :aldousbroder :wilson :huntnkill :backtrack})
