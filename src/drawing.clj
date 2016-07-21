@@ -77,10 +77,10 @@
     )
     (q/stroke-weight 2)
     (q/stroke 0 0 0)
-    (if (not (is_valid_cell (get left 0) (get left 1) size))
+    (if (not (is_valid_cell left size))
       (q/line x y x (+ y (:y cell_size)))
     )
-    (if (not (is_valid_cell (get bottom 0) (get bottom 1) size))
+    (if (not (is_valid_cell bottom size))
       (q/line x (+ y  (:y cell_size)) (+ x (:x cell_size)) (+ y (:y cell_size)))
     )
     (if (not (some #(= % top) (:neighbours cell)))
@@ -97,11 +97,13 @@
 )
 
 (defn polar_neighbour [cell, direction, size]
-  (case direction
-    :left [(dec (:x cell)) (:y cell)]
-    :right [(inc (:x cell)) (:y cell)]
-    :top [(:x cell) (inc (:y cell))]
-    :bottom [(:x cell) (dec (:y cell))]
+  (let [radial_move (/ 360 size)]
+    (case direction
+      :left [(+ (:rad cell) radial_move) (:dist cell)]
+      :right [(- (:rad cell) radial_move) (:dist cell)]
+      :top [(:rad cell) (inc (:dist cell))]
+      :bottom [(:rad cell) (dec (:dist cell))]
+    )
   )
 )
 
@@ -116,10 +118,25 @@
         left_bot [(+ (:x center) (* (:length cell_size) (Math/cos rad2) (:dist cell)))
                   (+ (:y center) (* (:length cell_size) (Math/sin rad2) (:dist cell)))]
         left_top [(+ (:x center) (* (:length cell_size) (Math/cos rad2) (inc (:dist cell))))
-                  (+ (:y center) (* (:length cell_size) (Math/sin rad2) (inc (:dist cell))))]]
-    (q/line right_bot right_top)
-    (q/line left_bot left_top)
-    (q/line right_top left_top)
+                  (+ (:y center) (* (:length cell_size) (Math/sin rad2) (inc (:dist cell))))]
+        left (polar_neighbour cell :left size)
+        right (polar_neighbour cell :right size)
+        top (polar_neighbour cell :top size)
+        bottom (polar_neighbour cell :bottom size)]
+    (q/stroke-weight 2)
+    (q/stroke 0 0 0)
+    (if (not (is_valid_polar_cell left size))
+      (q/line left_bot left_top)
+    )
+    (if (not (is_valid_polar_cell bottom size))
+      (q/line left_bot right_bot)
+    )
+    (if (not (some #(= % top) (:neighbours cell)))
+      (q/line right_top left_top)
+    )
+    (if (not (some #(= % right) (:neighbours cell)))
+      (q/line right_top right_bot)
+    )
   )
 )
 

@@ -6,20 +6,32 @@
 
 (declare point)
 (declare is_valid_cell)
+(declare is_valid_polar_cell)
 (declare generate_neighbours)
 
 (defprotocol CellProtocol
   (coords [node])
+  (neighbours_direction [node, direction])
 )
 
 (defprotocol GridProtocol
   (random_point [grid]) 
+  (within_bounds [grid cell_coords])
+  (update_neighbours [grid cell neighbours])
 )
 
 (defrecord Cell [x, y, neighbours, valid_neighbours]
   CellProtocol
   (coords [node]
     [(:x node) (:y node)]
+  )
+  (neighbours_direction [node, direction]
+    (case direction
+      :north (filter #(< (:y node) (get % 1)) (:valid_neighbours node))
+      :south (filter #(> (:y node) (get % 1)) (:valid_neighbours node))
+      :east (filter #(< (:x node) (get % 0)) (:valid_neighbours node))
+      :west (filter #(> (:x node) (get % 0)) (:valid_neighbours node))
+    )
   )
 )
 
@@ -28,12 +40,28 @@
   (random_point [grid]
     (point (rand-nth (into [] (:all_indices grid))) grid)
   )
+  (within_bounds [grid cell_coords]
+    (is_valid_cell cell_coords (:size grid))
+  )
+  (update_neighbours [grid cell neighbours]
+    (let [existing_neighbours (get-in grid [:cells (:y cell) (:x cell) :neighbours])]
+      (assoc-in grid [:cells (:y cell) (:x cell) :neighbours] neighbours)
+    )
+  )
 )
 
 (defrecord PolarCell [rad, dist, neighbours, valid_neighbours]
   CellProtocol
   (coords [node]
     [(:rad node) (:dist node)]
+  )
+  (neighbours_direction [node, direction]
+    (case direction
+      :north (filter #(> (:dist node) (get % 1)) (:valid_neighbours node))
+      :south (filter #(< (:dist node) (get % 1)) (:valid_neighbours node))
+      :east (filter #(> (:rad node) (get % 0)) (:valid_neighbours node))
+      :west (filter #(< (:rad node) (get % 0)) (:valid_neighbours node))
+    )
   )
 )
 
@@ -42,6 +70,14 @@
   (random_point [grid]
     (point (rand-nth (into [] (:all_indices grid))) grid)
   )  
+  (within_bounds [grid cell_coords]
+    (is_valid_polar_cell cell_coords (:size grid))
+  )
+  (update_neighbours [grid cell neighbours]
+    (let [existing_neighbours (get-in grid [:cells (:dist cell) (:rad cell) :neighbours])]
+      (assoc-in grid [:cells (:dist cell) (:rad cell) :neighbours] existing_neighbours)
+    )
+  )
 )
 
 (defn point 

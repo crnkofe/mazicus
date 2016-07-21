@@ -4,12 +4,10 @@
 (use 'clojure.pprint)
 (use '[clojure.set :only (difference)])
 
-(defn generate_bin_ne[x, y, size]
-  (filter 
-   #(is_valid_cell % size)
-   [
-    [(inc x) y] [x (inc y)]
-   ])
+(defn generate_bin_ne[cell, maze]
+  (let [coords (into [] (concat (neighbours_direction cell :north) (neighbours_direction cell :east)))]
+    (filter #(within_bounds maze %) coords)
+  )
 )
 
 (defn next_unused [graph, visited]
@@ -25,7 +23,7 @@
 )
 
 (defn next_step [cell, graph, visited]
-  (let [neighbours (generate_bin_ne (:x cell) (:y cell) (:size graph))]
+  (let [neighbours (generate_bin_ne cell graph)]
     (if (empty? neighbours)
       (let [unvisited_cell (next_unused graph visited)]
         (if (not (= unvisited_cell nil))
@@ -38,7 +36,7 @@
       )
       (let [ne_neighbour (rand-nth neighbours)]
         [(point ne_neighbour graph)
-         (assoc-in graph [:cells (:y cell) (:x cell) :neighbours] [ne_neighbour])
+         (update_neighbours graph cell [ne_neighbour])
          (conj visited ne_neighbour)]
       )
     )
