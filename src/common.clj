@@ -45,7 +45,7 @@
   )
   (update_neighbours [grid cell neighbours]
     (let [existing_neighbours (get-in grid [:cells (:y cell) (:x cell) :neighbours])]
-      (assoc-in grid [:cells (:y cell) (:x cell) :neighbours] neighbours)
+      (assoc-in grid [:cells (:y cell) (:x cell) :neighbours] (into [] (into #{} (concat existing_neighbours neighbours))))
     )
   )
 )
@@ -75,14 +75,14 @@
   )
   (update_neighbours [grid cell neighbours]
     (let [existing_neighbours (get-in grid [:cells (:dist cell) (:rad cell) :neighbours])]
-      (assoc-in grid [:cells (:dist cell) (:rad cell) :neighbours] neighbours)
+      (assoc-in grid [:cells (:dist cell) (:rad cell) :neighbours] (into [] (into #{} (concat neighbours existing_neighbours))))
     )
   )
 )
 
 (defn point 
   ([x, y, graph] (get (get (:cells graph) y) x))
-  ([point, graph] (get (get (:cells graph) (get point 1)) (get point 0)))
+  ([point, graph] (get-in graph [:cells (get point 1) (get point 0)]))
 )
 
 (defn generate_neighbours [coords, size] 
@@ -153,10 +153,10 @@
 )
 
 (defn connect_nodes [n1, n2, maze]
-  (let [idx1 [:cells (:y n1) (:x n1) :neighbours]
-        idx2 [:cells (:y n2) (:x n2) :neighbours]
-        maze1 (assoc-in maze idx1 (conj (get-in maze idx1) [(:x n2) (:y n2)]))]
-    (assoc-in maze1 idx2 (conj (get-in maze1 idx2) [(:x n1) (:y n1)]))
+  (let [idx1 (concat [:cells] (coords n1) [:neighbours])
+        idx2 (concat [:cells] (coords n2) [:neighbours])
+        maze1 (update_neighbours maze n1 [(coords n2)])]
+    (update_neighbours maze1 n2 [(coords n1)])
   )
 )
 
