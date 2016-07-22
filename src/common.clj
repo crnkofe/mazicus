@@ -145,10 +145,8 @@
 )
 
 (defn connected_neighbours [node, maze]
-  (let [linked_neighbours (map #(point % maze) (:neighbours node))
-        neighbours (map #(point % maze) (:valid_neighbours node))
-        reverse_linked_neighbours (filter #(contains_node node (:neighbours %)) neighbours)]
-    (into [] (union (into #{} linked_neighbours) (into #{} reverse_linked_neighbours)))
+  (let [linked_neighbours (map #(point % maze) (:neighbours node))]
+    (into [] (into #{} linked_neighbours))
   )
 )
 
