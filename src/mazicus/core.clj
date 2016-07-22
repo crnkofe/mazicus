@@ -76,7 +76,18 @@
           maze_type (get-in opts [:options :maze])
           maze (p ::algoritem (generate_maze algorithm size maze_type))
           dkstr (p ::dijsktra (dijkstra maze))
+          summary (get-in opts [:summary])
+          errors(get-in opts [:errors])
           dead_end_count (p ::dead (dead_ends maze))]
+      (if (get-in opts [:options :help])
+        (println summary)
+        (System/exit 0)
+      )
+      (println opts)
+      (if (get-in opts [:options :errors])
+        (println errors)
+        (System/exit 0)
+      )
       (println "Dead ends:" dead_end_count)
       (q/sketch 
         :title "Mazicus!" 

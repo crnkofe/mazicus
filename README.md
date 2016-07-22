@@ -5,10 +5,12 @@ This project features a number of algorithms to generate mazes (according to Maz
 ## Usage
 
 Install Leiningen
-
 $ lein run
 
-## Options
+## TODO
+
+- hexagon grid
+- 
 
 
 ## Examples

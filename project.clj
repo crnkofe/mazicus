@@ -1,4 +1,4 @@
-(defproject mazicus "0.1.0-SNAPSHOT"
+(defproject mazicus "0.1.0"
   :description "This project features a number of algorithms to generate mazes (according to Mazes for Programmers book)"
   :url "https://github.com/crnkofe/mazicus"
   :license {}
