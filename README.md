@@ -25,7 +25,6 @@ $ lein run -a backtrack -s 20 -m polar
 - nicer output
 - jar builds on commit
 - CI integration
-
 - hexagon grid
 - triangular grid
 - weaving 
