@@ -75,7 +75,7 @@
   )
   (update_neighbours [grid cell neighbours]
     (let [existing_neighbours (get-in grid [:cells (:dist cell) (:rad cell) :neighbours])]
-      (assoc-in grid [:cells (:dist cell) (:rad cell) :neighbours] (into [] (into #{} (concat neighbours existing_neighbours))))
+      (assoc-in grid [:cells (:dist cell) (:rad cell) :neighbours] (into [] (into #{} (concat existing_neighbours neighbours ))))
     )
   )
 )

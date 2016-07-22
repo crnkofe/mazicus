@@ -34,10 +34,14 @@
          graph
          (conj visited unvisited_cell)]
       )
-      (let [ne_neighbour (rand-nth neighbours)]
-        [(point ne_neighbour graph)
-         (update_neighbours graph cell [ne_neighbour])
-         (conj visited ne_neighbour)]
+      (let [ne_neighbour (rand-nth neighbours)
+            unvisited_cell (next_unused graph visited)]
+        (if (not (= unvisited_cell nil))
+          [(point unvisited_cell graph)
+           (connect_nodes cell (point ne_neighbour graph) graph )
+           (conj visited unvisited_cell)]
+          [nil (connect_nodes cell (point ne_neighbour graph) graph) visited]
+        )
       )
     )
   )
