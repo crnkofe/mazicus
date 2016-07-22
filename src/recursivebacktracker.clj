@@ -15,8 +15,8 @@
   )
 )
 
-(defn carve_recursive_backtrack_maze [size]
-  (let [initial_maze (grid size)
+(defn carve_recursive_backtrack_maze [size, maze_type]
+  (let [initial_maze (generate_grid size maze_type)
         initial_cell (random_point initial_maze)]
     (loop [path_stack [initial_cell]
            visited #{(coords initial_cell)}

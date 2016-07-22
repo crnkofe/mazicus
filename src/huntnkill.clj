@@ -32,8 +32,8 @@
   (into [] (difference (into #{} (:valid_neighbours from)) visited))
 )
 
-(defn carve_huntnkill_maze [size]
-  (let [initial_maze (grid size)
+(defn carve_huntnkill_maze [size, maze_type]
+  (let [initial_maze (generate_grid size maze_type)
         initial_cell (random_point initial_maze)]
     (loop [current_cell initial_cell
            updated_maze initial_maze

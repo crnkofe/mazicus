@@ -62,8 +62,8 @@
     :sidewinder (generate_sidewinder_path size maze_type)
     :aldousbroder (carve_aldbro_maze size maze_type)
     :wilson (carve_wilson_maze size maze_type)
-    :huntnkill (carve_huntnkill_maze size)
-    :backtrack (carve_recursive_backtrack_maze size)
+    :huntnkill (carve_huntnkill_maze size maze_type)
+    :backtrack (carve_recursive_backtrack_maze size maze_type)
     :default (carve_bin_alg_maze size))
 )
 
