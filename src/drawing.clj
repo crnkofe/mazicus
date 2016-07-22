@@ -107,22 +107,49 @@
   )
 )
 
-(defn draw_polar_maze_cell [cell, cell_size, size, center]
+(defn scos [degrees] 
+  (if (and (> degrees 90) (< degrees 270))
+    (* -1 (Math/cos degrees))
+    (Math/cos degrees)
+  )
+)
+
+(defn ssin [degrees] 
+  (if (and (> degrees 180) (< degrees 360))
+    (* -1 (Math/sin degrees))
+    (Math/sin degrees)
+  )
+)
+
+(defn draw_polar_maze_cell [cell, cell_size, size, center, distances]
   (let [cell_degrees (/ 360 size)
         rad1 (Math/toRadians (:rad cell)) 
         rad2 (Math/toRadians (+ (:rad cell) cell_degrees))
-        right_bot [(+ (:x center) (* (:length cell_size) (Math/cos rad1) (:dist cell))) 
-                   (+ (:y center) (* (:length cell_size) (Math/sin rad1) (:dist cell)))]
-        right_top [(+ (:x center) (* (:length cell_size) (Math/cos rad1) (inc (:dist cell))))
-                   (+ (:y center) (* (:length cell_size) (Math/sin rad1) (inc (:dist cell))))]
-        left_bot [(+ (:x center) (* (:length cell_size) (Math/cos rad2) (:dist cell)))
-                  (+ (:y center) (* (:length cell_size) (Math/sin rad2) (:dist cell)))]
-        left_top [(+ (:x center) (* (:length cell_size) (Math/cos rad2) (inc (:dist cell))))
-                  (+ (:y center) (* (:length cell_size) (Math/sin rad2) (inc (:dist cell))))]
+        right_bot [(+ (:x center) (* (:length cell_size) (scos rad1) (:dist cell))) 
+                   (+ (:y center) (* (:length cell_size) (ssin rad1) (:dist cell)))]
+        right_top [(+ (:x center) (* (:length cell_size) (scos rad1) (inc (:dist cell))))
+                   (+ (:y center) (* (:length cell_size) (ssin rad1) (inc (:dist cell))))]
+        left_bot [(+ (:x center) (* (:length cell_size) (scos rad2) (:dist cell)))
+                  (+ (:y center) (* (:length cell_size) (ssin rad2) (:dist cell)))]
+        left_top [(+ (:x center) (* (:length cell_size) (scos rad2) (inc (:dist cell))))
+                  (+ (:y center) (* (:length cell_size) (ssin rad2) (inc (:dist cell))))]
         left (polar_neighbour cell :left size)
         right (polar_neighbour cell :right size)
         top (polar_neighbour cell :top size)
-        bottom (polar_neighbour cell :bottom size)]
+        bottom (polar_neighbour cell :bottom size)
+        max_val (apply max (vals distances))
+        current_val (get distances cell 0)]
+    (if (> current_val 0)
+      (let [div_val (/ current_val max_val)]
+        (q/fill 255 0 0 (* div_val 255))
+        (q/no-stroke)
+        (q/quad (get right_top 0) (get right_top 1)
+                (get left_top 0) (get left_top 1)
+                (get left_bot 0) (get left_bot 1)
+                (get right_bot 0) (get right_bot 1)
+        )
+      )
+    )
     (q/stroke-weight 2)
     (q/stroke 0 0 0)
     (if (not (is_valid_polar_cell left size))
@@ -137,9 +164,12 @@
     (if (not (some #(= % right) (:neighbours cell)))
       (q/line right_top right_bot)
     )
+    (if (not (is_valid_polar_cell right size))
+      (q/line right_top right_bot)
+    )
   )
 )
 
-(defn draw_polar_maze_row [row, row_y, cell_size, size, distance, center]
-  (doall (map #(draw_polar_maze_cell % cell_size size center) (map #(get row %) (sort (keys row)))))
+(defn draw_polar_maze_row [row, row_y, cell_size, size, distances, center]
+  (doall (map #(draw_polar_maze_cell % cell_size size center distances) (map #(get row %) (sort (keys row)))))
 )

@@ -57,8 +57,8 @@
   )
   (neighbours_direction [node, direction]
     (case direction
-      :north (filter #(> (:dist node) (get % 1)) (:valid_neighbours node))
-      :south (filter #(< (:dist node) (get % 1)) (:valid_neighbours node))
+      :north (filter #(< (:dist node) (get % 1)) (:valid_neighbours node))
+      :south (filter #(> (:dist node) (get % 1)) (:valid_neighbours node))
       :east (filter #(> (:rad node) (get % 0)) (:valid_neighbours node))
       :west (filter #(< (:rad node) (get % 0)) (:valid_neighbours node))
     )
