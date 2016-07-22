@@ -77,7 +77,6 @@
           maze (p ::algoritem (generate_maze algorithm size maze_type))
           dkstr (p ::dijsktra (dijkstra maze))
           dead_end_count (p ::dead (dead_ends maze))]
-      (pprint maze)
       (println "Dead ends:" dead_end_count)
       (q/sketch 
         :title "Mazicus!" 

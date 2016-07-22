@@ -137,7 +137,7 @@
 )
 
 (defn contains_node [node, neighbours]
-  (some #(= % [(:x node) (:y node)]) neighbours)
+  (some #(= % (coords node)) neighbours)
 )
 
 (defn all_maze_cells [maze]
