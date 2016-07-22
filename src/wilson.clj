@@ -41,8 +41,8 @@
   )
 )
 
-(defn carve_wilson_maze [size]
-  (let [initial_maze (grid size)
+(defn carve_wilson_maze [size, grid_type]
+  (let [initial_maze (generate_grid size grid_type)
         initial_cell (random_point initial_maze)]
     (loop [updated_maze initial_maze
            current_visited #{(coords initial_cell)}]
