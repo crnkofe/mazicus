@@ -4,16 +4,25 @@
 (use 'clojure.pprint)
 (use '[clojure.set :only (difference, union)])
 
+(declare carve_right)
+
 (defn carve_top [cell graph]
-  (if (is_valid_cell [(:x cell) (inc (:y cell))] (:size graph))
-    (connect_nodes cell (point [(:x cell) (inc (:y cell))] graph) graph)
-    graph
+  (let [top_neighbours (neighbours_direction cell :north)
+        top_neighbour (first top_neighbours)]
+    (if (and (not (= top_neighbour nil)) (within_bounds graph top_neighbour))
+      (connect_nodes cell (point top_neighbour graph) graph)
+      (carve_right cell graph)
+    )
   )
 )
 
 (defn carve_right [cell graph]
-  (if (is_valid_cell [(inc (:x cell)) (:y cell)] (:size graph))
-    (connect_nodes cell (point [(inc (:x cell)) (:y cell)] graph) graph)
+  (let [right_neighbours (neighbours_direction cell :east)
+        right_neighbour (first right_neighbours)]
+    (if (and (not (= right_neighbour nil)) (within_bounds graph right_neighbour))
+      (connect_nodes cell (point right_neighbour graph) graph)
+      graph
+    )
   )
 )
 
@@ -23,16 +32,13 @@
 
 (defn sidewinder_next [path, graph, visited]
   (let [last_node (first (reverse path))
-        coin_flip (rand-nth [:carve_east :join_path])
-        no_north_side (not (is_valid_cell (:x last_node) (inc (:y last_node)) (:size graph)))
-        no_right_side (not (is_valid_cell (inc (:x last_node)) (:y last_node) (:size graph)))]
-    (if (and (not no_right_side) (or no_north_side  (= coin_flip :carve_east)))
-      (if (is_valid_cell (inc (:x last_node)) (:y last_node) (:size graph))
-        (let []
-         [(conj path (point [(inc (:x last_node)) (:y last_node) ] graph))
-          (carve_right last_node graph)]
+        coin_flip (rand-nth [:carve_east :join_path])]
+    (if (= coin_flip :carve_east)
+      (let [east_node (first (neighbours_direction last_node :east))]
+        (if (and (not (= nil east_node)) (within_bounds graph east_node))
+          [(conj path (point east_node graph)) (carve_right last_node graph)]
+          [path (carve_top last_node graph)]
         )
-        [path (carve_top last_node graph)]
       )
       (let [sidewinder_cell (rand-nth path)]
          [path (carve_top sidewinder_cell graph)]
@@ -55,8 +61,8 @@
   )
 )  
 
-(defn generate_sidewinder_path [size]
-  (let [initial_maze (grid size)
+(defn generate_sidewinder_path [size, grid_type]
+  (let [initial_maze (generate_grid size grid_type)
         initial_cell (point [0 (dec size)] initial_maze)
         initial_path [initial_cell]]
     (loop [current_path initial_path
@@ -66,6 +72,7 @@
         (if-not (= (count current_path) (count path))
           (recur path maze current_visited)
           (let [[path_start new_visited] (sidewinder_path path maze current_visited)]
+            (println path)
             (if (= nil path_start)
               maze
               (recur [(point path_start maze)] maze new_visited)

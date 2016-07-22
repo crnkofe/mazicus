@@ -59,7 +59,7 @@
 (defn generate_maze [algorithm, size, maze_type]
   (case algorithm
     :binary (carve_bin_alg_maze size maze_type)
-    :sidewinder (generate_sidewinder_path size)
+    :sidewinder (generate_sidewinder_path size maze_type)
     :aldousbroder (carve_aldbro_maze size)
     :wilson (carve_wilson_maze size)
     :huntnkill (carve_huntnkill_maze size)
